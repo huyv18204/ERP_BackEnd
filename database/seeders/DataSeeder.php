@@ -90,5 +90,29 @@ class DataSeeder extends Seeder
             ]);
         }
 
+
+        for ($i = 1; $i <= 5; $i++) {
+            DB::table('menus')->insert([
+                'label' => fake()->word(),
+                'parent' => null,
+                'icon' => fake()->randomElement(['PieChartOutlined', 'DesktopOutlined', 'UserOutlined', 'TeamOutlined', 'FileOutlined']),
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
+        }
+
+
+        for ($i = 1; $i <= 10; $i++) {
+            $parent = fake()->numberBetween(1, 5);
+            DB::table('menus')->insert([
+                'label' => fake()->word(),
+                'parent' => $parent,
+                'icon' => null,
+                'url' => "/erp-system/employees",
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
+        }
+
     }
 }

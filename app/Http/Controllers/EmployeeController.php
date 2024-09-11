@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Department;
 use App\Models\Employee;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -76,7 +77,7 @@ class EmployeeController extends Controller
 
     public function destroy(Request $request, $id)
     {
-        $employee = Employee::query()->where('id', $id)->first();
+        $employee = Employee::query()->find($id);
         if (!$employee) {
 
             return response()->json(["message" => "Employee does not exist"]);
@@ -87,10 +88,15 @@ class EmployeeController extends Controller
 
     public function update(Request $request, $id)
     {
+        $employee = Employee::query()->find($id);
+        if (!$employee) {
+            return response()->json(["message" => "Employee does not exist"]);
+        }
+
         if (empty($request->name) || empty($request->department_id)) {
             return response()->json(["message" => "Please fill in required fields"]);
         }
-        $employee = Employee::query()->where('id', $id)->update([
+        $employee = $employee->update([
             'name' => $request->name,
             'address' => $request->address,
             'phone' => $request->phone,
