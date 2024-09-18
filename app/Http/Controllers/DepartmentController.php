@@ -22,7 +22,7 @@ class DepartmentController extends Controller
             $departments->where('name', 'like', '%' . $name . '%');
         }
         if ($description) {
-            $departments->where('phone','like', '%' . $description . '%');
+            $departments->where('phone', 'like', '%' . $description . '%');
         }
 
         $departments = $departments->orderByDesc("id")->get();
@@ -37,8 +37,15 @@ class DepartmentController extends Controller
         $currentDay = date('d');
         $currentMonth = date('m');
         $employeePrev = Department::withTrashed()->orderByDesc('id')->first();
+
+        if ($employeePrev) {
+            $departmentCode = "DP" . $currentDay . $currentMonth . "-" . str_pad((int)$employeePrev->id + 1, 2, '0', STR_PAD_LEFT);
+        } else {
+            $departmentCode = "DP" . $currentDay . $currentMonth . "-01";
+        }
+
         $department = Department::query()->create([
-            'department_code' => "DP" . $currentDay . $currentMonth. "-" . str_pad((int)$employeePrev->id + 1, 2, '0', STR_PAD_LEFT),
+            'department_code' => $departmentCode,
             'name' => $request->name,
             'description' => $request->description,
         ]);
@@ -80,8 +87,6 @@ class DepartmentController extends Controller
         }
         return response()->json(["message" => "Updated successfully"]);
     }
-
-
 
 
 }

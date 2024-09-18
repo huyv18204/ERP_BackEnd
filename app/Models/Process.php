@@ -6,22 +6,15 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class Customer extends Model
+class Process extends Model
 {
-
-    use  SoftDeletes;
     use HasFactory;
 
-    protected $fillable = [
-        'fax',
-        'customer_code',
-        'name',
-        'address',
-        'phone'
-    ];
+    use SoftDeletes;
 
-    public function sale_orders()
-    {
-        return $this->hasMany(SaleOrder::class);
-    }
+    protected $fillable = [
+        'name',
+        'description',
+        'process_code'
+    ];
 }

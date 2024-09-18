@@ -2,10 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Factory;
+use App\Models\Color;
 use Illuminate\Http\Request;
 
-class FactoryController extends Controller
+class ColorController extends Controller
 {
     public function index(Request $request)
     {
@@ -13,17 +13,17 @@ class FactoryController extends Controller
         $name = $request->query('name');
         $description = $request->query('description');
 
-        $factories = Factory::query();
+        $colors = Color::query();
 
         if ($name) {
-            $factories->where('name', 'like', '%' . $name . '%');
+            $colors->where('name', 'like', '%' . $name . '%');
         }
         if ($description) {
-            $factories->where('description', 'like', '%' . $description . '%');
+            $colors->where('description', 'like', '%' . $description . '%');
         }
 
-        $factories = $factories->orderByDesc("id")->get();
-        return response()->json($factories);
+        $colors = $colors->orderByDesc("id")->get();
+        return response()->json($colors);
     }
 
     public function store(Request $request)
@@ -33,46 +33,47 @@ class FactoryController extends Controller
         }
         $currentDay = date('d');
         $currentMonth = date('m');
-        $factoryPrev = Factory::withTrashed()->orderByDesc('id')->first();
+        $colorPrev = Color::withTrashed()->orderByDesc('id')->first();
 
-        if ($factoryPrev) {
-            $factoryCode = "FA" . $currentDay . $currentMonth . "-" . str_pad((int)$factoryPrev->id + 1, 2, '0', STR_PAD_LEFT);
+        if ($colorPrev) {
+            $colorCode = "Cl" . $currentDay . $currentMonth . "-" . str_pad((int)$colorPrev->id + 1, 2, '0', STR_PAD_LEFT);
         } else {
-            $factoryCode = "FA" . $currentDay . $currentMonth . "-01";
+            $colorCode = "CL" . $currentDay . $currentMonth . "-01";
         }
-        $factory = Factory::query()->create([
-            'factory_code' => $factoryCode,
+
+        $color = Color::query()->create([
+            'color_code' => $colorCode,
             'name' => $request->name,
             'description' => $request->description,
         ]);
-        if (!$factory) {
+        if (!$color) {
             return response()->json(["message" => "Create fails"]);
         }
-        return response()->json($factory);
+        return response()->json($color);
     }
 
     public function destroy(Request $request, $id)
 
     {
-        $factory = Factory::query()->find($id);
-        if (!$factory) {
-            return response()->json(["message" => "Factory does not exist"]);
+        $color = Color::query()->find($id);
+        if (!$color) {
+            return response()->json(["message" => "Color does not exist"]);
         }
-        $factory->delete();
+        $color->delete();
         return response()->json(["message" => "Delete successfully"]);
     }
 
     public function update(Request $request, $id)
     {
-        $factory = Factory::query()->find($id);
-        if (!$factory) {
-            return response()->json(["message" => "Factory does not exist"]);
+        $color = Color::query()->find($id);
+        if (!$color) {
+            return response()->json(["message" => "Color does not exist"]);
         }
 
         if (empty($request->name)) {
             return response()->json(["message" => "Please fill in required fields"]);
         }
-        $response = $factory->update([
+        $response = $color->update([
             'name' => $request->name,
             'description' => $request->description,
         ]);

@@ -19,7 +19,7 @@ class LineController extends Controller
             $lines->where('name', 'like', '%' . $name . '%');
         }
         if ($description) {
-            $lines->where('phone', 'like', '%' . $description . '%');
+            $lines->where('description', 'like', '%' . $description . '%');
         }
 
         $lines = $lines->orderByDesc("id")->get();
@@ -34,8 +34,13 @@ class LineController extends Controller
         $currentDay = date('d');
         $currentMonth = date('m');
         $linePrev = Line::withTrashed()->orderByDesc('id')->first();
+        if ($linePrev) {
+            $lineCode = "LN" . $currentDay . $currentMonth . "-" . str_pad((int)$linePrev->id + 1, 2, '0', STR_PAD_LEFT);
+        } else {
+            $lineCode = "LN" . $currentDay . $currentMonth . "-01";
+        }
         $line = Line::query()->create([
-            'line_code' => "LN" . $currentDay . $currentMonth . "-" . str_pad((int)$linePrev->id + 1, 2, '0', STR_PAD_LEFT),
+            'line_code' => $lineCode,
             'name' => $request->name,
             'description' => $request->description,
         ]);

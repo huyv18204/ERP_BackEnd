@@ -2,10 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Factory;
+use App\Models\Process;
 use Illuminate\Http\Request;
 
-class FactoryController extends Controller
+class ProcessController extends Controller
 {
     public function index(Request $request)
     {
@@ -13,17 +13,17 @@ class FactoryController extends Controller
         $name = $request->query('name');
         $description = $request->query('description');
 
-        $factories = Factory::query();
+        $processes = Process::query();
 
         if ($name) {
-            $factories->where('name', 'like', '%' . $name . '%');
+            $processes->where('name', 'like', '%' . $name . '%');
         }
         if ($description) {
-            $factories->where('description', 'like', '%' . $description . '%');
+            $processes->where('description', 'like', '%' . $description . '%');
         }
 
-        $factories = $factories->orderByDesc("id")->get();
-        return response()->json($factories);
+        $processes = $processes->orderByDesc("id")->get();
+        return response()->json($processes);
     }
 
     public function store(Request $request)
@@ -33,46 +33,46 @@ class FactoryController extends Controller
         }
         $currentDay = date('d');
         $currentMonth = date('m');
-        $factoryPrev = Factory::withTrashed()->orderByDesc('id')->first();
+        $processPrev = Process::withTrashed()->orderByDesc('id')->first();
 
-        if ($factoryPrev) {
-            $factoryCode = "FA" . $currentDay . $currentMonth . "-" . str_pad((int)$factoryPrev->id + 1, 2, '0', STR_PAD_LEFT);
+        if ($processPrev) {
+            $processCode = "PC" . $currentDay . $currentMonth . "-" . str_pad((int)$processPrev->id + 1, 2, '0', STR_PAD_LEFT);
         } else {
-            $factoryCode = "FA" . $currentDay . $currentMonth . "-01";
+            $processCode = "PC" . $currentDay . $currentMonth . "-01";
         }
-        $factory = Factory::query()->create([
-            'factory_code' => $factoryCode,
+        $process = Process::query()->create([
+            'process_code' => $processCode,
             'name' => $request->name,
             'description' => $request->description,
         ]);
-        if (!$factory) {
+        if (!$process) {
             return response()->json(["message" => "Create fails"]);
         }
-        return response()->json($factory);
+        return response()->json($process);
     }
 
     public function destroy(Request $request, $id)
 
     {
-        $factory = Factory::query()->find($id);
-        if (!$factory) {
-            return response()->json(["message" => "Factory does not exist"]);
+        $process = Process::query()->find($id);
+        if (!$process) {
+            return response()->json(["message" => "Process does not exist"]);
         }
-        $factory->delete();
+        $process->delete();
         return response()->json(["message" => "Delete successfully"]);
     }
 
     public function update(Request $request, $id)
     {
-        $factory = Factory::query()->find($id);
-        if (!$factory) {
-            return response()->json(["message" => "Factory does not exist"]);
+        $process = Process::query()->find($id);
+        if (!$process) {
+            return response()->json(["message" => "Process does not exist"]);
         }
 
         if (empty($request->name)) {
             return response()->json(["message" => "Please fill in required fields"]);
         }
-        $response = $factory->update([
+        $response = $process->update([
             'name' => $request->name,
             'description' => $request->description,
         ]);
