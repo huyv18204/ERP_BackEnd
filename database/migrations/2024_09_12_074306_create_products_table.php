@@ -11,12 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('sale_order_items', function (Blueprint $table) {
+        Schema::create('products', function (Blueprint $table) {
             $table->id();
-            $table->string('code',55)->unique();
-            $table->foreignIdFor(\App\Models\SaleOrder::class)->constrained();
-            $table->foreignIdFor(\App\Models\Product::class)->constrained();
-            $table->date("delivery_date")->nullable();
+            $table->string('code')->unique();
+            $table->string('name', 55);
+            $table->decimal('unit_price',8, 0);
             $table->string('description')->nullable();
             $table->timestamp('deleted_at')->nullable();
             $table->timestamps();
@@ -28,6 +27,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('sale_order_items');
+        Schema::dropIfExists('products');
     }
 };

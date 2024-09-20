@@ -14,8 +14,7 @@ class SaleOrderItem extends Model
     protected $fillable = [
         'code',
         'sale_order_id',
-        'product',
-        'unit_price',
+        'product_id',
         'delivery_date',
         'description'
     ];
@@ -24,5 +23,15 @@ class SaleOrderItem extends Model
     public function sale_order()
     {
         return $this->belongsTo(SaleOrder::class);
+    }
+
+    public function product_items()
+    {
+        return $this->hasMany(ProductItem::class);
+    }
+
+    public function product()
+    {
+        return $this->belongsTo(Product::class);
     }
 }

@@ -27,4 +27,5 @@ class SaleOrder extends Model
     {
         return $this->belongsTo(Customer::class);
     }
+
 }

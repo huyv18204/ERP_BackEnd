@@ -2,10 +2,11 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\NgType;
+use App\Helpers\CodeGenerator;
+use App\Models\Warehouse;
 use Illuminate\Http\Request;
 
-class NgTypeController extends Controller
+class WarehouseController extends Controller
 {
     public function index(Request $request)
     {
@@ -13,17 +14,17 @@ class NgTypeController extends Controller
         $name = $request->query('name');
         $description = $request->query('description');
 
-        $ngs = NgType::query();
+        $warehouses = Warehouse::query();
 
         if ($name) {
-            $ngs->where('name', 'like', '%' . $name . '%');
+            $warehouses->where('name', 'like', '%' . $name . '%');
         }
         if ($description) {
-            $ngs->where('description', 'like', '%' . $description . '%');
+            $warehouses->where('description', 'like', '%' . $description . '%');
         }
 
-        $ngs = $ngs->orderByDesc("id")->get();
-        return response()->json($ngs);
+        $warehouses = $warehouses->orderByDesc("id")->get();
+        return response()->json($warehouses);
     }
 
     public function store(Request $request)
@@ -31,53 +32,47 @@ class NgTypeController extends Controller
         if (empty($request->name)) {
             return response()->json(["message" => "Please fill in required fields"]);
         }
-        $currentDay = date('d');
-        $currentMonth = date('m');
-        $NgTypePrev = NgType::withTrashed()->orderByDesc('id')->first();
-
-        if ($NgTypePrev) {
-            $NgTypeCode = "NG" . $currentDay . $currentMonth . "-" . str_pad((int)$NgTypePrev->id + 1, 2, '0', STR_PAD_LEFT);
-        } else {
-            $NgTypeCode = "NG" . $currentDay . $currentMonth . "-01";
-        }
-        $ng = NgType::query()->create([
-            'ng_code' => $NgTypeCode,
+        $code = CodeGenerator::generateCode('warehouses', 'WH');
+        $warehouse = Warehouse::query()->create([
+            'code' => $code,
             'name' => $request->name,
             'description' => $request->description,
         ]);
-        if (!$ng) {
+        if (!$warehouse) {
             return response()->json(["message" => "Create fails"]);
         }
-        return response()->json($ng);
+        return response()->json($warehouse);
     }
 
     public function destroy(Request $request, $id)
-
     {
-        $ng = NgType::query()->find($id);
-        if (!$ng) {
-            return response()->json(["message" => "NgType does not exist"]);
+        $warehouse = Warehouse::query()->find($id);
+        if (!$warehouse) {
+
+            return response()->json(["message" => "Warehouse does not exist"]);
         }
-        $ng->delete();
+        $warehouse->delete();
         return response()->json(["message" => "Delete successfully"]);
     }
 
     public function update(Request $request, $id)
     {
-        $ng = NgType::query()->find($id);
-        if (!$ng) {
-            return response()->json(["message" => "NgType does not exist"]);
+
+        $warehouse = Warehouse::query()->find($id);
+        if (!$warehouse) {
+            return response()->json(["message" => "Warehouse does not exist"]);
         }
 
         if (empty($request->name)) {
             return response()->json(["message" => "Please fill in required fields"]);
         }
-        $response = $ng->update([
+
+        $warehouse = $warehouse->update([
             'name' => $request->name,
             'description' => $request->description,
         ]);
 
-        if (!$response) {
+        if (!$warehouse) {
             return response()->json(["message" => "Updated fails"]);
         }
         return response()->json(["message" => "Updated successfully"]);

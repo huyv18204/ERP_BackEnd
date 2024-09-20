@@ -11,8 +11,8 @@ class CodeGenerator
         $currentDay = date('d');
         $currentMonth = date('m');
         $prevCode = $prefix . $currentDay . $currentMonth;
-
         $stt = DB::table($table)->where('code', 'LIKE', $prevCode . '%')->orderByDesc('id')->first();
+//        $stt = DB::table($table)->where('code', 'LIKE', $prevCode . '%')->orderByDesc('id')->first();
         if ($stt) {
             $parts = explode('-', $stt->code);
             $lastPart = (int)end($parts) + 1;

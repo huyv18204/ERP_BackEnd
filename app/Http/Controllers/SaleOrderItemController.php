@@ -7,5 +7,9 @@ use Illuminate\Http\Request;
 
 class SaleOrderItemController extends Controller
 {
-
+public  function index()
+{
+    $saleOrderItem = SaleOrderItem::query()->get();
+    return response()->json($saleOrderItem);
+}
 }
