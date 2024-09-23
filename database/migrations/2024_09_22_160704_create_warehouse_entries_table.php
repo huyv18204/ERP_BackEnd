@@ -11,12 +11,14 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('stocks', function (Blueprint $table) {
+        Schema::create('warehouse_entries', function (Blueprint $table) {
             $table->id();
-            $table->foreignIdFor(\App\Models\Product::class)->nullable();
-            $table->foreignIdFor(\App\Models\Material::class)->nullable();
-            $table->foreignIdFor(\App\Models\Warehouse::class);
-            $table->integer('quantity');
+            $table->string('code')->unique();
+            $table->foreignIdFor(\App\Models\Supplier::class)->constrained();
+            $table->date('entry_date');
+            $table->decimal('total_amount', 15, 0);
+            $table->decimal('total_price', 15, 0);
+            $table->boolean('status')->default(false);
             $table->timestamp('deleted_at')->nullable();
             $table->timestamps();
         });
@@ -27,6 +29,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('stocks');
+        Schema::dropIfExists('warehouse_entries');
     }
 };

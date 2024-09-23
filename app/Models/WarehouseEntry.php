@@ -1,0 +1,31 @@
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
+
+class WarehouseEntry extends Model
+{
+    use HasFactory;
+    use SoftDeletes;
+    protected $fillable = [
+        'supplier_id',
+        'entry_date',
+        'code',
+        'total_amount',
+        'total_price',
+        'status'
+    ];
+
+    public function supplier()
+    {
+        return $this->belongsTo(Supplier::class);
+    }
+
+    public function warehouse_entry_details()
+    {
+        return $this->hasMany(WarehouseEntryDetail::class);
+    }
+}

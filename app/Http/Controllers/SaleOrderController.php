@@ -8,41 +8,12 @@ use App\Models\ProductNg;
 use App\Models\ProductProcess;
 use App\Models\SaleOrder;
 use App\Models\SaleOrderItem;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
 class SaleOrderController extends Controller
 {
-
-//    public function index(Request $request)
-//    {
-//        $customer_id = $request->query('customer_id');
-//        $start_date = $request->query('start_order_date');
-//        $end_date = $request->query('end_order_date');
-//        $saleOrders = SaleOrder::with(['customer','sale_order_items.product_items' => function ($query) {
-//            $query->selectRaw('sale_order_item_id, SUM(quantity) as total')->groupBy('sale_order_item_id');
-//        }])
-//            ->withSum(['sale_order_items as total_quantity' => function ($query) {
-//                $query->join('product_items', 'product_items.sale_order_item_id', '=', 'sale_order_items.id')
-//                    ->selectRaw('SUM(product_items.quantity)');
-//            }], 'product_items.quantity');
-//
-//
-//        if ($customer_id) {
-//            $saleOrders->where('customer_id', $customer_id);
-//        }
-//        if ($start_date) {
-//            $saleOrders->where('order_date', '>=', $start_date);
-//        }
-//
-//        if ($end_date) {
-//            $saleOrders->where('order_date', '<=', $end_date);
-//        }
-//
-//        $saleOrders = $saleOrders->orderByDesc('id')->get();
-//        return response()->json($saleOrders);
-//    }
-
 
     public function index(Request $request)
     {
@@ -74,12 +45,12 @@ class SaleOrderController extends Controller
     {
         try {
             DB::beginTransaction();
-            if (empty($request->customer_id) || empty($request->order_date)) {
+            if (empty($request->customer_id)) {
                 return response()->json(["type" => "error", "message" => "Please fill in required fields"]);
             }
             $saleOrder = SaleOrder::query()->create([
                 'code' => CodeGenerator::generateCode('sale_orders', "SO"),
-                'order_date' => $request->order_date,
+                'order_date' => Carbon::now()->setTimezone('Asia/Ho_Chi_Minh'),
                 'customer_id' => $request->customer_id
             ]);
             if ($saleOrder) {
@@ -90,7 +61,7 @@ class SaleOrderController extends Controller
                         if ($index == 0 && (empty($item['product_id']))) {
                             return response()->json(["type" => "error", "message" => "Please fill in required fields"]);
                         }
-                        if (!empty($item['product_id'])) {
+                        if (!empty($item['product_id']) && !empty($item['delivery_date'])) {
                             $saleOrderItem = SaleOrderItem::query()->create([
                                 'code' => CodeGenerator::generateCode('sale_order_items', "SI"),
                                 'sale_order_id' => $saleOrder->id,
@@ -107,7 +78,6 @@ class SaleOrderController extends Controller
             }
 
             DB::commit();
-//            $data = json_encode($arrItems,JSON_PRETTY_PRINT);
             return response()->json([
                 "data" => [
                     "sale_order" => $saleOrder,

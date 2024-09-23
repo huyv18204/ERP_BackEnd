@@ -13,7 +13,6 @@ return new class extends Migration
     {
         Schema::create('boms', function (Blueprint $table) {
             $table->id();
-            $table->string("code")->unique();
             $table->foreignIdFor(\App\Models\Product::class);
             $table->foreignIdFor(\App\Models\Material::class);
             $table->integer('quantity');

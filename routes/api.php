@@ -1,11 +1,13 @@
 <?php
 
+use App\Http\Controllers\BomController;
 use App\Http\Controllers\ColorController;
 use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\DepartmentController;
 use App\Http\Controllers\EmployeeController;
 use App\Http\Controllers\FactoryController;
 use App\Http\Controllers\LineController;
+use App\Http\Controllers\MaterialController;
 use App\Http\Controllers\MenuController;
 use App\Http\Controllers\NgTypeController;
 use App\Http\Controllers\ProcessController;
@@ -16,8 +18,11 @@ use App\Http\Controllers\ProductProcessController;
 use App\Http\Controllers\SaleOrderController;
 use App\Http\Controllers\SaleOrderItemController;
 use App\Http\Controllers\SizeController;
+use App\Http\Controllers\StockController;
 use App\Http\Controllers\SupplierController;
 use App\Http\Controllers\WarehouseController;
+use App\Http\Controllers\WarehouseEntryController;
+use App\Http\Controllers\WarehouseEntryDetailController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -71,6 +76,20 @@ Route::prefix("v1")->group(function () {
         Route::post("/", [ProductController::class, 'store']);
         Route::put("/{id}", [ProductController::class, 'update']);
         Route::delete("/{id}", [ProductController::class, 'destroy']);
+    });
+
+    Route::prefix("materials")->group(function () {
+        Route::get("/", [MaterialController::class, 'index']);
+        Route::post("/", [MaterialController::class, 'store']);
+        Route::put("/{id}", [MaterialController::class, 'update']);
+        Route::delete("/{id}", [MaterialController::class, 'destroy']);
+    });
+
+    Route::prefix("boms")->group(function () {
+        Route::get("/", [BomController::class, 'index']);
+        Route::post("/", [BomController::class, 'store']);
+        Route::put("/{id}", [BomController::class, 'update']);
+        Route::delete("/{id}", [BomController::class, 'destroy']);
     });
 
     Route::prefix("departments")->group(function () {
@@ -140,8 +159,31 @@ Route::prefix("v1")->group(function () {
         Route::delete("/{id}", [SaleOrderController::class, 'destroy']);
     });
 
+    Route::prefix("stocks")->group(function () {
+        Route::get("/", [StockController::class, 'index']);
+        Route::post("/", [StockController::class, 'store']);
+        Route::put("/{id}", [StockController::class, 'update']);
+        Route::delete("/{id}", [StockController::class, 'destroy']);
+    });
+
+    Route::prefix("warehouse-entries")->group(function () {
+        Route::get("/", [WarehouseEntryController::class, 'index']);
+        Route::post("/", [WarehouseEntryController::class, 'store']);
+        Route::put("/{id}", [WarehouseEntryController::class, 'update']);
+        Route::delete("/{id}", [WarehouseEntryController::class, 'destroy']);
+    });
+
+    Route::prefix("warehouse-entry-details")->group(function () {
+        Route::get("/", [WarehouseEntryDetailController::class, 'index']);
+        Route::post("/", [WarehouseEntryDetailController::class, 'store']);
+        Route::put("/{id}", [WarehouseEntryDetailController::class, 'update']);
+        Route::delete("/{id}", [WarehouseEntryDetailController::class, 'destroy']);
+        Route::get("/{id}", [WarehouseEntryDetailController::class, 'show']);
+    });
+
     Route::prefix("sale-order-items")->group(function () {
         Route::get("/", [SaleOrderItemController::class, 'index']);
+        Route::get("/{id}", [SaleOrderItemController::class, 'show']);
         Route::post("/", [SaleOrderItemController::class, 'store']);
         Route::put("/{id}", [SaleOrderItemController::class, 'update']);
         Route::delete("/{id}", [SaleOrderItemController::class, 'destroy']);

@@ -6,16 +6,17 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class Material extends Model
+class WarehouseEntryDetail extends Model
 {
     use HasFactory;
-    use  SoftDeletes;
+    use SoftDeletes;
 
     protected $fillable = [
-        'code',
+        'material_code',
+        'quantity',
         'name',
-        'supplier_id',
-        'description',
-        'cost',
+        'unit_price',
+        'total_price',
+        'warehouse_entry_id'
     ];
 }
