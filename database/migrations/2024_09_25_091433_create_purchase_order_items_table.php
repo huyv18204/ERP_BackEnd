@@ -11,13 +11,8 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('stocks', function (Blueprint $table) {
+        Schema::create('purchase_order_items', function (Blueprint $table) {
             $table->id();
-            $table->foreignIdFor(\App\Models\Product::class)->nullable();
-            $table->foreignIdFor(\App\Models\Material::class)->nullable();
-            $table->foreignIdFor(\App\Models\Warehouse::class);
-            $table->integer('quantity');
-            $table->timestamp('deleted_at')->nullable();
             $table->timestamps();
         });
     }
@@ -27,6 +22,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('stocks');
+        Schema::dropIfExists('purchase_order_items');
     }
 };

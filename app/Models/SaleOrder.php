@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\SaleOrderStatus;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -14,7 +15,10 @@ class SaleOrder extends Model
     protected $fillable = [
         "code",
         'order_date',
-        'customer_id'
+        'customer_id',
+        'total_price',
+        'total_amount',
+        'status'
     ];
 
 
@@ -28,4 +32,7 @@ class SaleOrder extends Model
         return $this->belongsTo(Customer::class);
     }
 
+    protected $casts = [
+        'status' => SaleOrderStatus::class,
+    ];
 }

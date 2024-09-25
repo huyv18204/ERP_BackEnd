@@ -3,17 +3,39 @@
 namespace App\Http\Controllers;
 
 use App\Models\Material;
-use App\Models\Stock;
+use App\Models\StockMaterial;
 use App\Models\WarehouseEntry;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
-class StockController extends Controller
+class StockMaterialController extends Controller
 {
+    public function index(Request $request)
+    {
+        $material_id = $request->query('material_id');
+        $code = $request->query('code');
+
+        $query = StockMaterial::with(['material']);
+
+        if ($material_id) {
+            $query->where('material_id', $material_id);
+        }
+
+        if ($code) {
+            $query->whereHas('material', function ($query) use ($code) {
+                $query->where('code', $code);
+            });
+        }
+
+        $stock = $query->get();
+        return response()->json($stock);
+
+    }
+
+
     public function store(Request $request)
     {
         $request->validate([
-            'warehouse_id' => 'required',
             'supplier_id' => 'required',
             'warehouseEntryDetail' => 'required|array',
             'warehouseEntryDetail.*.material_code' => 'required',
@@ -29,8 +51,7 @@ class StockController extends Controller
                 $material = Material::query()->where('code', $item['material_code'])->where('supplier_id', $request->supplier_id)->first();
 
                 if ($material) {
-                    $stock = Stock::query()
-                        ->where('warehouse_id', $request->warehouse_id)
+                    $stock = StockMaterial::query()
                         ->where('material_id', $material->id)
                         ->first();
 
@@ -48,9 +69,8 @@ class StockController extends Controller
                     ]);
 
                     if ($responseMaterial) {
-                        Stock::query()->create([
+                        StockMaterial::query()->create([
                             'material_id' => $responseMaterial->id,
-                            'warehouse_id' => $request->warehouse_id,
                             'quantity' => $item['quantity']
                         ]);
                     }
@@ -63,11 +83,10 @@ class StockController extends Controller
 
             DB::commit();
 
-            return response()->json(['type'=>"success",'message' => 'Warehouse entry details successfully stored']);
+            return response()->json(['type' => "success", 'message' => 'Warehouse entry details successfully stored']);
         } catch (\Exception $e) {
             DB::rollBack();
-            return response()->json(['type'=>"error",'message' => 'Failed to store warehouse entry details', 'error' => $e->getMessage()], 500);
+            return response()->json(['type' => "error", 'message' => 'Failed to store warehouse entry details', 'error' => $e->getMessage()], 500);
         }
     }
-
 }

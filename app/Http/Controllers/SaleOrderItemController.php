@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Helpers\CodeGenerator;
+use App\Models\Product;
 use App\Models\ProductItem;
 use App\Models\ProductNg;
 use App\Models\ProductProcess;
@@ -40,16 +41,18 @@ class SaleOrderItemController extends Controller
                     $saleOrderItems = $request->saleOrderItem;
                     $arrItems = [];
                     foreach ($saleOrderItems as $index => $item) {
-                        if ($index == 0 && (empty($item['product_id']))) {
+                        if ($index == 0 && (empty($item['product_id']) || empty($item['delivery_date']))) {
                             return response()->json(["type" => "error", "message" => "Please fill in required fields"]);
                         }
-                        if (!empty($item['product_id'])) {
+                        if (!empty($item['product_id']) && !empty($item['delivery_date'])) {
+                            $product = Product::query()->find($item['product_id']);
                             $saleOrderItem = SaleOrderItem::query()->create([
                                 'code' => CodeGenerator::generateCode('sale_order_items', "SI"),
                                 'sale_order_id' => $request->id,
                                 'product_id' => $item['product_id'],
                                 'delivery_date' => $item['delivery_date'],
                                 'description' => $item['description'],
+                                'unit_price' =>$product->unit_price
                             ]);
                             $saleOrderItem['key'] = $index + 1;
                             $arrItems[] = $saleOrderItem;
@@ -109,17 +112,25 @@ class SaleOrderItemController extends Controller
 
     public function destroy($id)
     {
-        $saleOrderItems = SaleOrderItem::query()->find($id);
-        if (!$saleOrderItems) {
+        $saleOrderItem = SaleOrderItem::query()->find($id);
+        if (!$saleOrderItem) {
             return response()->json([
                 "type" => "error",
                 "message" => "Sale order does not exits"
             ]);
         }
-        ProductItem::query()->where("sale_order_item_id", $saleOrderItems->id)->delete();
-        ProductProcess::query()->where("sale_order_item_id", $saleOrderItems->id)->delete();
-        ProductNg::query()->where("sale_order_item_id", $saleOrderItems->id)->delete();
-        $saleOrderItems->delete();
+        ProductItem::query()->where("sale_order_item_id", $saleOrderItem->id)->delete();
+        ProductProcess::query()->where("sale_order_item_id", $saleOrderItem->id)->delete();
+        ProductNg::query()->where("sale_order_item_id", $saleOrderItem->id)->delete();
+
+        $saleOrder = SaleOrder::query()->find($saleOrderItem->sale_order_id);
+        if ($saleOrder) {
+            $saleOrder->update([
+                'total_amount' => $saleOrder->total_amount - $saleOrderItem->total_amount,
+                'total_price' => $saleOrder->total_price - $saleOrderItem->total_price,
+            ]);
+        }
+        $saleOrderItem->delete();
         return response()->json([
             "type" => "success",
             "message" => "Delete success"

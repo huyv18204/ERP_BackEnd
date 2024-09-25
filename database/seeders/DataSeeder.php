@@ -16,7 +16,7 @@ class DataSeeder extends Seeder
         $currentDay = date('d');
         $currentMonth = date('m');
 
-        for ($i = 0; $i < 10; $i++) {
+        for ($i = 0; $i < 3; $i++) {
             DB::table('departments')->insert([
                 'department_code' => "DP" . $currentDay . $currentMonth . str_pad($i + 1, 2, '0', STR_PAD_LEFT),
                 'name' => "Develop" . $i + 1,
@@ -29,7 +29,7 @@ class DataSeeder extends Seeder
         $currentDay = date('d');
         $currentMonth = date('m');
         $prevCode = "EP" . $currentDay . $currentMonth;
-        foreach (range(1, 10) as $index) {
+        foreach (range(1, 3) as $index) {
             $stt = DB::table('employees')->where("employee_code", "LIKE", $prevCode . "%")->orderByDesc('id')->first();
             if ($stt) {
                 $parts = explode('-', $stt->employee_code); // Tách phần cuối cùng của mã nhân viên
@@ -70,7 +70,7 @@ class DataSeeder extends Seeder
             ]);
         }
 
-        for ($i = 0; $i < 10; $i++) {
+        for ($i = 0; $i < 3; $i++) {
             DB::table('lines')->insert([
                 'line_code' => "LN" . str_pad($i + 1, 2, '0', STR_PAD_LEFT),
                 'name' => "Line " . $i + 1,
@@ -80,7 +80,7 @@ class DataSeeder extends Seeder
             ]);
         }
 
-        for ($i = 0; $i < 10; $i++) {
+        for ($i = 0; $i < 3; $i++) {
             DB::table('factories')->insert([
                 'factory_code' => "FA" . str_pad($i + 1, 2, '0', STR_PAD_LEFT),
                 'name' => "Factory " . $i + 1,
@@ -91,28 +91,17 @@ class DataSeeder extends Seeder
         }
 
 
-        for ($i = 1; $i <= 5; $i++) {
-            DB::table('menus')->insert([
-                'label' => fake()->word(),
-                'parent' => null,
-                'icon' => fake()->randomElement(['PieChartOutlined', 'DesktopOutlined', 'UserOutlined', 'TeamOutlined', 'FileOutlined']),
+        for ($i = 0; $i < 3; $i++) {
+            DB::table('ngs')->insert([
+                'code' => "NG" . str_pad($i + 1, 2, '0', STR_PAD_LEFT),
+                'name' => "NG " . $i + 1,
+                'description' => "Description " . $i + 1,
                 'created_at' => now(),
                 'updated_at' => now(),
             ]);
         }
 
 
-        for ($i = 1; $i <= 10; $i++) {
-            $parent = fake()->numberBetween(1, 5);
-            DB::table('menus')->insert([
-                'label' => fake()->word(),
-                'parent' => $parent,
-                'icon' => null,
-                'url' => "/erp-system/employees",
-                'created_at' => now(),
-                'updated_at' => now(),
-            ]);
-        }
 
     }
 }

@@ -16,7 +16,10 @@ class SaleOrderItem extends Model
         'sale_order_id',
         'product_id',
         'delivery_date',
-        'description'
+        'description',
+        'unit_price',
+        'total_price',
+        'total_amount'
     ];
 
 

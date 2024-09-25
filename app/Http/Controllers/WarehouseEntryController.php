@@ -34,7 +34,7 @@ class WarehouseEntryController extends Controller
             $WHEntry->where('code', $code);
         }
 
-        $WHEntry = $WHEntry->orderByDesc('id')->orderBy('status','asc')->get();
+        $WHEntry = $WHEntry->orderByDesc('id')->orderBy('status', 'asc')->get();
         return response()->json($WHEntry);
     }
 
@@ -51,8 +51,9 @@ class WarehouseEntryController extends Controller
             if (!empty($request->warehouseEntryDetail)) {
 
                 $WHEntryDetails = $request->warehouseEntryDetail;
-                if (!empty($item['material_code']) && !empty($item['quantity']) && !empty($item['unit_price'])) {
-                    foreach ($WHEntryDetails as $index => $item) {
+
+                foreach ($WHEntryDetails as $index => $item) {
+                    if (!empty($item['material_code']) && !empty($item['quantity']) && !empty($item['unit_price']) && !empty($item['name'])) {
                         $total_price += $item['quantity'] * $item['unit_price'];
                         $total_amount += $item['quantity'];
                     }
@@ -74,10 +75,10 @@ class WarehouseEntryController extends Controller
                         if ($index == 0 && (empty($item['material_code'] || empty($item['quantity']) || empty($item['unit_price'])) || empty($item['name']))) {
                             return response()->json(["type" => "error", "message" => "Please fill in required fields"]);
                         }
-                        if (!empty($item['material_code']) && !empty($item['quantity']) && !empty($item['unit_price'])) {
+                        if (!empty($item['material_code']) && !empty($item['quantity']) && !empty($item['unit_price']) && !empty($item['name'])) {
                             $WHEntryDetail = WarehouseEntryDetail::query()->create([
                                 "warehouse_entry_id" => $WHEntry->id,
-                                'total_price' => $item['quantity'] * $item['unit_price'],
+                                'total_price' => ($item['quantity'] * $item['unit_price']),
                                 'name' => $item['name'],
                                 'material_code' => $item['material_code'],
                                 'quantity' => $item['quantity'],
