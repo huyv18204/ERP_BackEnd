@@ -13,6 +13,12 @@ return new class extends Migration
     {
         Schema::create('purchase_order_items', function (Blueprint $table) {
             $table->id();
+            $table->foreignIdFor(\App\Models\PurchaseOrder::class)->constrained();
+            $table->foreignIdFor(\App\Models\Material::class)->constrained();
+            $table->decimal('quantity', 15, 0);
+            $table->decimal('unit_price', 15, 0);
+            $table->decimal('total_price', 15, 0);
+            $table->timestamp('deleted_at')->nullable();
             $table->timestamps();
         });
     }

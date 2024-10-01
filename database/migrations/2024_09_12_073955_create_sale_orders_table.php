@@ -23,7 +23,7 @@ return new class extends Migration {
                 'In Production',
                 'Completed',
                 'Cancelled',
-                'On Hold'
+                'On Hold',
             ])->default('Pending');
             $table->timestamp('deleted_at')->nullable();
             $table->timestamps();

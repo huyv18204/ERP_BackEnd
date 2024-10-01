@@ -11,13 +11,14 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('purchase_requisition_items', function (Blueprint $table) {
+        Schema::create('allocated_materials', function (Blueprint $table) {
             $table->id();
-            $table->string('material_code',55);
-            $table->foreignIdFor(\App\Models\PurchaseRequisition::class)->constrained();
             $table->foreignIdFor(\App\Models\Material::class)->constrained();
-            $table->integer('quantity');
-            $table->timestamp('deleted_at')->nullable();
+            $table->foreignIdFor(\App\Models\ProductionOrder::class)->constrained();
+            $table->integer('allocated_quantity');
+            $table->enum('status',[
+               'Allocated','Used'
+            ])->default('Allocated');
             $table->timestamps();
         });
     }
@@ -27,6 +28,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('purchase_requisition_items');
+        Schema::dropIfExists('allocated_materials');
     }
 };

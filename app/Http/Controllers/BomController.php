@@ -86,12 +86,6 @@ class BomController extends Controller
             'message' => "Update successfully"
         ]);
     }
-//
-//    public function update(Request $request, $id)
-//    {
-//
-//        return response()->json($request->all());
-//    }
     public function destroy($id)
     {
         $BOM = Bom::query()->find($id);

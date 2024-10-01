@@ -17,8 +17,8 @@ return new class extends Migration
             $table->foreignIdFor(\App\Models\SaleOrder::class)->constrained();
             $table->foreignIdFor(\App\Models\Product::class)->constrained();
             $table->integer('unit_price');
+            $table->integer('quantity')->default(0);
             $table->integer('total_price')->default(0);
-            $table->integer('total_amount')->default(0);
             $table->date("delivery_date")->nullable();
             $table->string('description')->nullable();
             $table->timestamp('deleted_at')->nullable();

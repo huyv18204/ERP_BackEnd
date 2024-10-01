@@ -13,6 +13,11 @@ return new class extends Migration
     {
         Schema::create('purchase_requisitions', function (Blueprint $table) {
             $table->id();
+            $table->string('code')->unique();
+            $table->date('create_date');
+            $table->enum('status', ['Pending', 'Approved', 'Rejected'])->default('Pending');
+            $table->text('notes')->nullable();
+            $table->timestamp('deleted_at')->nullable();
             $table->timestamps();
         });
     }

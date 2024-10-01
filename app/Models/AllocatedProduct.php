@@ -4,15 +4,15 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\SoftDeletes;
 
-class Size extends Model
+class AllocatedProduct extends Model
 {
     use HasFactory;
-    use SoftDeletes;
+
     protected $fillable = [
-        'name',
-        'description',
-        'size_code'
+        'allocated_quantity',
+        'product_id',
+        'sale_order_id',
+        'status'
     ];
 }

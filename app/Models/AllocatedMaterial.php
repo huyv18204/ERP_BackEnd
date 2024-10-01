@@ -4,18 +4,15 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\SoftDeletes;
 
-class Color extends Model
+class AllocatedMaterial extends Model
 {
     use HasFactory;
-    use SoftDeletes;
 
     protected $fillable = [
-        'name',
-        'description',
-        'color_code'
+        'allocated_quantity',
+        'material_id',
+        'production_order_id',
+        'status'
     ];
-
-
 }

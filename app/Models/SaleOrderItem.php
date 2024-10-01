@@ -19,7 +19,7 @@ class SaleOrderItem extends Model
         'description',
         'unit_price',
         'total_price',
-        'total_amount'
+        'quantity'
     ];
 
 
@@ -28,10 +28,6 @@ class SaleOrderItem extends Model
         return $this->belongsTo(SaleOrder::class);
     }
 
-    public function product_items()
-    {
-        return $this->hasMany(ProductItem::class);
-    }
 
     public function product()
     {

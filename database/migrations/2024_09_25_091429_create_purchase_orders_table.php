@@ -13,6 +13,13 @@ return new class extends Migration
     {
         Schema::create('purchase_orders', function (Blueprint $table) {
             $table->id();
+            $table->string('code')->unique();
+            $table->foreignIdFor(\App\Models\Supplier::class)->constrained();
+            $table->dateTime('order_date');
+            $table->enum('status', ['Approved', 'Rejected', 'Pending'])->default('pending');
+            $table->decimal('total_amount', 15, 0)->default(0);
+            $table->decimal('total_price', 15, 0)->default(0);
+            $table->timestamp('deleted_at')->nullable();
             $table->timestamps();
         });
     }

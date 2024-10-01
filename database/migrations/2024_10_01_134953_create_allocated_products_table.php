@@ -11,11 +11,14 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('stock_products', function (Blueprint $table) {
+        Schema::create('allocated_products', function (Blueprint $table) {
             $table->id();
             $table->foreignIdFor(\App\Models\Product::class)->constrained();
-            $table->integer('quantity');
-            $table->timestamp('deleted_at')->nullable();
+            $table->foreignIdFor(\App\Models\SaleOrder::class)->constrained();
+            $table->integer('allocated_quantity');
+            $table->enum('status',[
+                'Allocated','Used'
+            ])->default('Allocated');
             $table->timestamps();
         });
     }
@@ -25,6 +28,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('stock_products');
+        Schema::dropIfExists('allocated_products');
     }
 };

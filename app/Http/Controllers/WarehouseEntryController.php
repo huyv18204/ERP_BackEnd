@@ -34,7 +34,7 @@ class WarehouseEntryController extends Controller
             $WHEntry->where('code', $code);
         }
 
-        $WHEntry = $WHEntry->orderByDesc('id')->orderBy('status', 'asc')->get();
+        $WHEntry = $WHEntry->orderByDesc('id')->get();
         return response()->json($WHEntry);
     }
 
