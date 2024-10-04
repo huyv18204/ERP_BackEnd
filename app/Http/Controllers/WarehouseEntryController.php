@@ -38,7 +38,6 @@ class WarehouseEntryController extends Controller
         return response()->json($WHEntry);
     }
 
-
     public function store(Request $request)
     {
         try {

@@ -128,7 +128,6 @@ class SaleOrderController extends Controller
         try {
             DB::beginTransaction();
 
-            // Tìm đơn hàng
             $saleOrder = SaleOrder::query()->find($id);
             if (!$saleOrder) {
                 return response()->json([
@@ -137,21 +136,17 @@ class SaleOrderController extends Controller
                 ]);
             }
 
-            // Cập nhật trạng thái của đơn hàng thành "Cancelled"
             $saleOrder->update([
                 "status" => "Cancelled"
             ]);
-            // Xóa các liên kết của SaleOrderItem với ProductItem, ProductProcess, ProductNg
-            $saleOrderItems = $saleOrder->sale_order_items; // Sử dụng quan hệ từ model
+            $saleOrderItems = $saleOrder->sale_order_items;
             foreach ($saleOrderItems as $saleOrderItem) {
                 ProductProcess::query()->where("sale_order_item_id", $saleOrderItem->id)->delete();
                 ProductNg::query()->where("sale_order_item_id", $saleOrderItem->id)->delete();
             }
 
-            // Xóa các mục đơn hàng
             SaleOrderItem::query()->where('sale_order_id', $saleOrder->id)->delete();
 
-            // Xóa đơn hàng
             $saleOrder->delete();
 
             DB::commit();
@@ -186,7 +181,6 @@ class SaleOrderController extends Controller
         $response = $saleOrder->update([
             "status" => $validatedData['status']
         ]);
-
         if (!$response) {
             return response()->json([
                 "type" => "error",

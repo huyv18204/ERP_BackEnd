@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\AllocatedMaterial;
 use App\Models\Material;
 use App\Models\StockMaterial;
+use App\Models\StockOut;
 use App\Models\WarehouseEntry;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -31,8 +33,6 @@ class StockMaterialController extends Controller
         return response()->json($stock);
 
     }
-
-
     public function store(Request $request)
     {
         $request->validate([
@@ -83,6 +83,47 @@ class StockMaterialController extends Controller
 
             DB::commit();
 
+            return response()->json(['type' => "success", 'message' => 'Warehouse entry details successfully stored']);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return response()->json(['type' => "error", 'message' => 'Failed to store warehouse entry details', 'error' => $e->getMessage()], 500);
+        }
+    }
+
+
+    public function warehouseExport(Request $request)
+    {
+        $request->validate([
+            'warehouseEntryDetail' => 'required|array',
+            'warehouseEntryDetail.*.material_code' => 'required',
+            'warehouseEntryDetail.*.quantity' => 'required|numeric|min:0',
+            'warehouseEntryDetail.*.unit_price' => 'required|numeric|min:0',
+            'warehouseEntryDetail.*.name' => 'required',
+        ]);
+
+        try {
+            DB::beginTransaction();
+
+            foreach ($request->stockOutItems as $item) {
+                $stockMaterial = StockMaterial::query()->where('material_id', $item['material_id'])->first();
+                $allocated = AllocatedMaterial::query()->where('material_id', $item['material_id'])->sum('quantity');
+                if(!$stockMaterial){
+                    return response()->json(['type' => "error", 'message' => 'Material does not exits in warehouse']);
+                }
+
+                if(($stockMaterial->quantity - $allocated) < $item['quantity']){
+                    return response()->json(['type' => "error", 'message' => 'Insufficient inventory']);
+                }
+
+                $stockMaterial->update([
+                   'quantity' =>$stockMaterial->quantity - $item['quantity']
+                ]);
+                }
+
+                StockOut::query()->where('id', $item['stock_out_id'])->update([
+                    "status" => true
+                ]);
+            DB::commit();
             return response()->json(['type' => "success", 'message' => 'Warehouse entry details successfully stored']);
         } catch (\Exception $e) {
             DB::rollBack();
